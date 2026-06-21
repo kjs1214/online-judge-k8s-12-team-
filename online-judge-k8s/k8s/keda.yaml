@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: judge-worker-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: judge-worker      
+  minReplicaCount: 0         
+  maxReplicaCount: 10        
+  cooldownPeriod: 30         
+  triggers:
+  - type: redis-streams
+    metadata:
+      address: online-judge-redis.default.svc.cluster.local:6379
+      stream: submission_stream
+      consumerGroup: judge_group
+      lagCount: "3"   
+      activationLagCount: "0"

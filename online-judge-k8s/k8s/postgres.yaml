@@ -1,0 +1,62 @@
+# 1. 영구 저장소(외장 하드) 요청
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# 2. DB 배포
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-judge-db
+  labels:
+    app: online-judge-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: online-judge-db
+  template:
+    metadata:
+      labels:
+        app: online-judge-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "judge_user"
+        - name: POSTGRES_PASSWORD
+          value: "judge_pass"
+        - name: POSTGRES_DB
+          value: "online_judge"
+
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+# 3. DB 서비스 연결
+apiVersion: v1
+kind: Service
+metadata:
+  name: online-judge-db
+spec:
+  selector:
+    app: online-judge-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

@@ -1,0 +1,25 @@
+# 자원 제한 테스트
+import time
+
+
+bomb = [b'x' * (1024 * 1024) for _ in range(400)]
+
+
+print("Memory Used More than 256Mi")
+time.sleep(0.5)
+
+# 권한 상승 테스트
+#include <iostream> 
+#include <sched.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+
+int main() {
+    if (unshare(CLONE_NEWUSER) == -1) {
+        std::cout << "Failed Attack: " << strerror(errno) << std::endl;
+        return 1;
+    }
+    std::cout << "Successed for Privilege Escalation: " << getuid() << std::endl;
+    return 0;
+}

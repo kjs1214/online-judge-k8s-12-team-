@@ -1,0 +1,9 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+kubernetes==31.0.0
+pydantic==2.10.4
+redis==5.2.1
+prometheus-fastapi-instrumentator==7.0.0
+prometheus-client==0.20.0
+sqlalchemy==2.0.29
+psycopg2-binary==2.9.9

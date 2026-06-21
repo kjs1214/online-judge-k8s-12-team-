@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: online-judge-backend
+  labels:
+    app: online-judge-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: online-judge-backend
+  template:
+    metadata:
+      labels:
+        app: online-judge-backend
+    spec:
+      serviceAccountName: online-judge-backend
+      containers:
+      - name: backend
+        image: online-judge/backend:v2.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        env:
+        - name: REDIS_HOST
+          value: "online-judge-redis"
+        - name: POSTGRES_USER
+          value: "judge_user"
+        - name: POSTGRES_PASSWORD
+          value: "judge_pass"
+        - name: POSTGRES_HOST
+          value: "online-judge-db"
+        - name: POSTGRES_DB
+          value: "online_judge"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: online-judge-backend
+spec:
+  selector:
+    app: online-judge-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
